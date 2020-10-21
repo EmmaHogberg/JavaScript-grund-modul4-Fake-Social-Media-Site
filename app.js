@@ -47,49 +47,38 @@ fetch(apiUrl + "posts")
     // Lyssna efter klick på author button
     postsElement.addEventListener("click", (event) => {
       const userId = event.target.dataset.userid;
-      console.log(userId);
 
       // Fetcha användar-info
       fetch(`${apiUrl}users/${userId}`)
         .then((res) => res.json())
         .then((userData) => {
-          console.log(userData);
-
           // Display användar-info till höger på sidan
+          userContainer.innerHTML = "";
 
-          // const user = null;
-          // user.innerHTML = "";
           const user = document.createElement("div");
           user.className = "user";
           userContainer.appendChild(user);
 
           const author = document.createElement("h2");
           author.innerText = "Author";
-          user.appendChild(author);
 
           const name = document.createElement("div");
           name.innerText = userData.name;
-          user.appendChild(name);
 
           const email = document.createElement("div");
           email.innerText = userData.email;
-          user.appendChild(email);
 
           const phone = document.createElement("div");
           phone.innerText = "Phone: " + userData.phone;
-          user.appendChild(phone);
+
+          const br = document.createElement("br");
+
+          const company = document.createElement("div");
+          company.innerText = "Company: " + userData.company.name;
+          user.append(author, name, email, phone, br, company);
         });
     });
   });
-
-//   <div class="user">
-//   <h2>Author</h2>
-//   <div>Leanne Graham</div>
-//   <div>Sincere@april.biz</div>
-//   <div>Phone: 1-770-736-8031 x56442</div>
-//   <br>
-//   <div>Company: Romaguera-Crona</div>
-//  </div>
 
 // <div class="post">
 //   <h3 class="post-title">sunt aut facere</h3>
