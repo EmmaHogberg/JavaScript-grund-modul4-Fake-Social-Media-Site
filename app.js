@@ -1,9 +1,7 @@
-// Hämta html-element
+// Hämta API-url och html-element
 const apiUrl = "https://jsonplaceholder.typicode.com/";
 const postsElement = document.querySelector(".posts");
-const userContainer = document.querySelector(".user-container");
-
-// Ladda in alla inlägg
+const userContainerElement = document.querySelector(".user-container");
 
 // Fetcha inlägg
 fetch(apiUrl + "posts")
@@ -11,91 +9,107 @@ fetch(apiUrl + "posts")
   .then((data) => {
     const posts = data;
 
-    // Bygg html för posts
+    // Bygg html för varje inlägg
     posts.forEach((element) => {
       const postElement = document.createElement("div");
       postElement.className = "post";
-      postsElement.appendChild(postElement);
+      postsElement.append(postElement);
 
       // Title
       const postTitleElement = document.createElement("h3");
       postTitleElement.className = "post-title";
       postTitleElement.innerText = element.title;
-      postElement.appendChild(postTitleElement);
+      postElement.append(postTitleElement);
 
       // Body
       const postBodyElement = document.createElement("div");
       postBodyElement.className = "post-body";
       postBodyElement.innerText = element.body;
-      postElement.appendChild(postBodyElement);
+      postElement.append(postBodyElement);
 
       // Comment button
       const commentButton = document.createElement("button");
       commentButton.className = "comment-button";
       commentButton.dataset.postid = element.id;
       commentButton.innerText = "Read comments";
-      postElement.appendChild(commentButton);
+      postElement.append(commentButton);
 
       // Author info button
       const authorButton = document.createElement("button");
       authorButton.className = "author-button";
       authorButton.dataset.userid = element.userId;
       authorButton.innerText = "Author info";
-      postElement.appendChild(authorButton);
-    });
+      postElement.append(authorButton);
 
-    // Lyssna efter klick på author button
-    postsElement.addEventListener("click", (event) => {
-      const userId = event.target.dataset.userid;
+      // Lyssna efter klick på "author button"-knappen
+      authorButton.addEventListener("click", (event) => {
+        const userId = event.target.dataset.userid;
 
-      // Fetcha användar-info
-      fetch(`${apiUrl}users/${userId}`)
-        .then((res) => res.json())
-        .then((userData) => {
-          // Display användar-info till höger på sidan
-          userContainer.innerHTML = "";
+        // Fetcha användar-info och bygg html för användar-info
+        fetch(`${apiUrl}users/${userId}`)
+          .then((res) => res.json())
+          .then((userData) => {
+            userContainerElement.innerHTML = "";
 
-          const user = document.createElement("div");
-          user.className = "user";
-          userContainer.appendChild(user);
+            const user = document.createElement("div");
+            user.className = "user";
+            userContainerElement.appendChild(user);
 
-          const author = document.createElement("h2");
-          author.innerText = "Author";
+            const author = document.createElement("h2");
+            author.innerText = "Author";
 
-          const name = document.createElement("div");
-          name.innerText = userData.name;
+            // Namn
+            const name = document.createElement("div");
+            name.innerText = userData.name;
 
-          const email = document.createElement("div");
-          email.innerText = userData.email;
+            // Epost
+            const email = document.createElement("div");
+            email.innerText = userData.email;
 
-          const phone = document.createElement("div");
-          phone.innerText = "Phone: " + userData.phone;
+            // Telefonnummer
+            const phone = document.createElement("div");
+            phone.innerText = "Phone: " + userData.phone;
 
-          const br = document.createElement("br");
+            const br = document.createElement("br");
 
-          const company = document.createElement("div");
-          company.innerText = "Company: " + userData.company.name;
-          user.append(author, name, email, phone, br, company);
-        });
+            // Företag
+            const company = document.createElement("div");
+            company.innerText = "Company: " + userData.company.name;
+            user.append(author, name, email, phone, br, company);
+          });
+      });
+
+      // Lyssna efter klick på "read comments"-knappen
+      commentButton.addEventListener("click", (event) => {
+        const postId = event.target.dataset.postid;
+
+        // Fetcha kommentarer och bygg html för varje kommentar
+        fetch(`${apiUrl}posts/${postId}/comments`)
+          .then((res) => res.json())
+          .then((commentData) => {
+            commentData.forEach((element) => {
+              const comments = document.createElement("ul");
+              comments.className = "comments";
+              postElement.append(comments);
+
+              const comment = document.createElement("li");
+              comment.className = "comment";
+              comments.append(comment);
+
+              // Avsändare
+              const sender = document.createElement("div");
+              sender.innerText = element.email;
+              comment.append(sender);
+
+              // Kommentar
+              const commentContent = document.createElement("div");
+              commentContent.innerText = element.body;
+              comment.append(commentContent);
+
+              // Inaktivera knapp när kommentarerna är hämtade för det inlägget
+              event.target.disabled = true;
+            });
+          });
+      });
     });
   });
-
-// <div class="post">
-//   <h3 class="post-title">sunt aut facere</h3>
-//   <div class="post-body">quia et suscipit</div>
-
-//   <button class="comment-button" data-postid="1">Read comments</button>
-//   <button class="author-button" data-userid="1">Author info</button>
-//   <ul class="comments">
-//     <li class="comment">
-//       <div>Eliseo@gardner.biz</div>
-//       <div>laudantium enim quasi est</div>
-//     </li>
-//   </ul>
-// </div>
-
-// Lyssna efter klick på "read comments"-knappen
-
-// Fetcha comments
-
-// Display comments
